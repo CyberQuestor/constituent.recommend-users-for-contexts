@@ -1,6 +1,6 @@
 
 
-package com.hs.haystack.tachyon.constituent.recommendcontextstouser
+package com.hs.haystack.tachyon.constituent.recommenduserstocontexts
 
 import org.apache.predictionio.controller.PDataSource
 import org.apache.predictionio.controller.EmptyEvaluationInfo

@@ -5,8 +5,8 @@ package org.apache.spark.mllib.recommendation
 // MatrixFactorizationModel's constructor is private and we are using
 // its constructor in order to save and load the model
 
-import com.hs.haystack.tachyon.constituent.recommendcontextstouser.ALSAlgorithmParams
-import com.hs.haystack.tachyon.constituent.recommendcontextstouser.Item
+import com.hs.haystack.tachyon.constituent.recommenduserstocontexts.ALSAlgorithmParams
+import com.hs.haystack.tachyon.constituent.recommenduserstocontexts.Item
 
 import org.apache.predictionio.controller.PersistentModel
 import org.apache.predictionio.controller.PersistentModelLoader
