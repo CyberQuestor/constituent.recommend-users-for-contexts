@@ -153,8 +153,10 @@ class DataSource(val dsp: DataSourceParams)
     val kFold = evalParams.kFold
     val ratings: RDD[(Rating, Long)] = getRatings(sc).zipWithUniqueId
     ratings.cache
+    
+    null
 
-    (0 until kFold).map { idx => {
+    /*(0 until kFold).map { idx => {
       val trainingRatings = ratings.filter(_._2 % kFold != idx).map(_._1)
       val testingRatings = ratings.filter(_._2 % kFold == idx).map(_._1)
 
@@ -166,7 +168,7 @@ class DataSource(val dsp: DataSourceParams)
           case (user, ratings) => (Query(user, evalParams.queryNum), ActualResult(ratings.toArray))
         }
       )
-    }}
+    }}*/
   }
 }
 

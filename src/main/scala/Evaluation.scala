@@ -21,7 +21,7 @@ case class PrecisionAtK(k: Int, ratingThreshold: Double = 2.0)
   override def header = s"Precision@K (k=$k, threshold=$ratingThreshold)"
 
   def calculate(q: Query, p: PredictedResult, a: ActualResult): Option[Double] = {
-    val positives: Set[String] = a.ratings.filter(_.rating >= ratingThreshold).map(_.item).toSet
+    /*val positives: Set[String] = a.ratings.filter(_.rating >= ratingThreshold).map(_.item).toSet
 
     // If there is no positive results, Precision is undefined. We don't consider this case in the
     // metrics, hence we return None.
@@ -30,7 +30,8 @@ case class PrecisionAtK(k: Int, ratingThreshold: Double = 2.0)
     } else {
       val tpCount: Int = p.itemScores.take(k).filter(is => positives(is.item)).size
       Some(tpCount.toDouble / math.min(k, positives.size))
-    }
+    } */
+    None
   }
 }
 

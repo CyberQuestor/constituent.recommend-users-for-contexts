@@ -6,23 +6,21 @@ import org.apache.predictionio.controller.EngineFactory
 import org.apache.predictionio.controller.Engine
 
 case class Query(
-  user: String,
+  items: List[String],
   num: Int
 )
 
 case class PredictedResult(
-  itemScores: Array[ItemScore]
+  userScores: Array[UserScore]
 )
 
 case class ActualResult(
   ratings: Array[Rating]
 )
 
-case class ItemScore(
-  item: String,
-  score: Double,
-  domain: String,
-  itemType: String
+case class UserScore(
+  user: String,
+  score: Double
 )
 
 object RecommendationEngine extends EngineFactory {
