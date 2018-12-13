@@ -50,7 +50,7 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     
     // collect Item as Map and convert ID to Int index
     val items: Map[Int, Item] = data.items.map { case (id, item) => (itemStringIntMap.getOrElse(id, 0), item)
-    case default => (0, Item(None,"haystack.in","POV"))
+    case default => (0, Item("00000000-0000-0000-0000-000000000000", None,"haystack.in","POV"))
     }.collectAsMap.toMap
     
     val mllibRatings = data.ratings.map( r =>
@@ -92,7 +92,7 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
   }
 
   def predict(model: ALSModel, query: Query): PredictedResult = {
-    model.items.withDefaultValue(new Item(None, "haystack.in", "POV"))
+    model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV"))
     
     var combinedWithOthers = ArrayBuffer[UserScore]()
     
