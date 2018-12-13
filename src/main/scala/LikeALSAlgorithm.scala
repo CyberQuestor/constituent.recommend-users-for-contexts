@@ -82,7 +82,7 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
         if (t1 > t2) v1 else v2
       }.map { case ((u, i), (like, t)) => // MODIFIED
         // With ALS.trainImplicit(), we can use negative value to indicate
-        // nagative siginal (ie. dislike)
+        // negative signal (ie. dislike)
         val r = if (like) 1 else -1
         // MLlibRating requires integer index for user and item
         MLlibRating(u, i, r)
