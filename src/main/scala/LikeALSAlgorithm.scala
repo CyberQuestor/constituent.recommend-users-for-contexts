@@ -97,9 +97,8 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
     val seed = ap.seed.getOrElse(System.nanoTime)
     
     println("ready for spark")
-    mllibRatings.collect().foreach(println)
-    println("top 20")
-    mllibRatings.take(20).foreach(println)
+    println("top 50")
+    mllibRatings.take(50).foreach(println)
     
     val m = ALS.trainImplicit(
       ratings = mllibRatings,
