@@ -42,6 +42,8 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
       s"items in PreparedData cannot be empty." +
       " Please check if DataSource generates TrainingData" +
       " and Preprator generates PreparedData correctly.")
+      
+      println("Training recommended items model through ALS likes")
 
     // create User and item's String ID to integer index BiMap
     val userStringIntMap = BiMap.stringInt(data.users.keys)
@@ -94,6 +96,8 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
     // seed for MLlib ALS
     val seed = ap.seed.getOrElse(System.nanoTime)
     
+    println("ready for spark")
+    
     val m = ALS.trainImplicit(
       ratings = mllibRatings,
       rank = ap.rank,
@@ -102,6 +106,8 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
       blocks = -1,
       alpha = 1.0,
       seed = seed)
+      
+      println("Model through ALS likes training complete")
       
     new ALSModel(
       rank = m.rank,

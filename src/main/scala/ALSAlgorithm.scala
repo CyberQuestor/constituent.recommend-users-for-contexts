@@ -41,6 +41,8 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       s"RDD[Rating] in PreparedData cannot be empty." +
       " Please check if DataSource generates TrainingData" +
       " and Preparator generates PreparedData correctly.")
+      
+      println("Training recommended items model through ALS view only")
     // Convert user and item String IDs to Int index for MLlib
 
     val userStringIntMap = BiMap.stringInt(data.ratings.map(_.user))
@@ -77,6 +79,8 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     als.setSeed(seed)
     als.setCheckpointInterval(10)
     val m = als.run(mllibRatings)
+    
+    println("Model through ALS view only training complete")
 
     new ALSModel(
       rank = m.rank,
