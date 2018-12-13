@@ -47,8 +47,8 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     val itemStringIntMap = BiMap.stringInt(data.ratings.map(_.item))
     
     // collect Item as Map and convert ID to Int index
-    val items: Map[Int, Item] = data.items.map { case (id, item) =>
-      (itemStringIntMap(id), item)
+    val items: Map[Int, Item] = data.items.map { case (id, item) => (itemStringIntMap(id), item)
+    case default => (0, Item(None,"haystack.in","POV"))
     }.collectAsMap.toMap
     
     val mllibRatings = data.ratings.map( r =>
