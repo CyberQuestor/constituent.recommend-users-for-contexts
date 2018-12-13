@@ -98,7 +98,13 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
     
     println("ready for spark")
     println("top 50")
-    mllibRatings.take(50).foreach(println)
+    //mllibRatings.take(50).foreach(println)
+    
+    mllibRatings.take(50).foreach(e => {
+      val i = items.getOrElse(e.product, "Item missing")
+      println("Composition: " + e)
+      println("Composition item: " + i)
+    })
     
     val m = ALS.trainImplicit(
       ratings = mllibRatings,
