@@ -50,8 +50,8 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
     val itemStringIntMap = BiMap.stringInt(data.items.keys)
     
     // collect Item as Map and convert ID to Int index
-    val items: Map[Int, Item] = data.items.map { case (id, item) =>
-      (itemStringIntMap(id), item)
+    val items: Map[Int, Item] = data.items.map { case (id, item) =>(itemStringIntMap.getOrElse(id, 0), item)
+      case default => (0, Item(None,"haystack.in","POV"))
     }.collectAsMap.toMap
     
     val mllibRatings = data.likeEvents
@@ -97,6 +97,9 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
     val seed = ap.seed.getOrElse(System.nanoTime)
     
     println("ready for spark")
+    mllibRatings.collect().foreach(println)
+    println("top 20")
+    mllibRatings.take(20).foreach(println)
     
     val m = ALS.trainImplicit(
       ratings = mllibRatings,

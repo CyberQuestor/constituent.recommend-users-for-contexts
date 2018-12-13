@@ -28,8 +28,8 @@ object RecommendationEngine extends EngineFactory {
     new Engine(
       classOf[DataSource],
       classOf[Preparator],
-      Map("als" -> classOf[ALSAlgorithm]),
-          //"likealgo" -> classOf[LikeALSAlgorithm]), // ADDED),
+      Map("als" -> classOf[ALSAlgorithm],
+          "likealgo" -> classOf[LikeALSAlgorithm]), // ADDED),
       classOf[Serving])
   }
 }
