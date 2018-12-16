@@ -117,8 +117,10 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV"))
     
     
-    println("predicted user features")
+    println("incoming query items")
     query.items.take(50).foreach(println)
+    println("incoming query number")
+    println(query.num)
     
     println("predicted user features")
     //model.userFeatures.take(50).foreach(println)
