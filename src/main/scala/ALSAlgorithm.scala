@@ -134,9 +134,12 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
         println("found user score for item: "+ e)
         userScores.take(50).foreach(println)
       } catch {
-        case ex : NoSuchElementException =>{
+        case ex : NoSuchElementException => {
             println("No user features found for this item")
          }
+        case e: Exception => {
+            println("No user features found for this item")
+        }
       }
     })
     
