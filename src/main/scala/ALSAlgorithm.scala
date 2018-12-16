@@ -116,6 +116,9 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
   def predict(model: ALSModel, query: Query): PredictedResult = {
     model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV"))
     
+    println("predicted user features")
+    model.userFeatures.take(50).foreach(println)
+    
     var combinedWithOthers = ArrayBuffer[UserScore]()
     
     query.items.foreach (e => {
