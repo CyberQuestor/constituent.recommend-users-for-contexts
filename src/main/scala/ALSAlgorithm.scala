@@ -127,11 +127,17 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       println("item now is: " + e)
       val userIntStringMap = model.userStringIntMap.inverse
       println("triggering user recommendations")
-      val userScores = model.recommendUsers(e, query.num)
-      println("found user score for item: "+ e)
-      userScores.take(50).foreach(println)
-      val userScoreMap = userScores.map(r => UserScore(userIntStringMap(r.user), r.rating))
-      combinedWithOthers = combinedWithOthers ++ userScoreMap
+      try{
+        val userScores = model.recommendUsers(e, query.num)
+           .map (r => UserScore(userIntStringMap(r.user), r.rating))
+        combinedWithOthers = combinedWithOthers ++ userScores
+        println("found user score for item: "+ e)
+        userScores.take(50).foreach(println)
+      } catch {
+        case ex : NoSuchElementException =>{
+            println("No user features found for this item")
+         }
+      }
     })
     
 
