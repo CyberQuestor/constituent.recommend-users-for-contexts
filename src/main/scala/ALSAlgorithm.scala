@@ -116,12 +116,15 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
   def predict(model: ALSModel, query: Query): PredictedResult = {
     model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV"))
     
+    println("Entering prediction")
+    
     // convert items to Int index
     val queryList: Set[Int] = query.items.map(model.itemStringIntMap.get(_))
       .flatten.toSet
     
     var combinedWithOthers = ArrayBuffer[UserScore]()
     queryList.foreach (e => {
+      println("item now is: " + e)
       val userIntStringMap = model.userStringIntMap.inverse
       val userScores = model.recommendUsers(e, query.num)
       println("found user score for item: "+ e)
