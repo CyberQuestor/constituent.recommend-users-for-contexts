@@ -131,6 +131,10 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       println("found user score for item: "+ e)
       userScores.take(50).foreach(println)
       val userScoreMap = userScores.map(r => UserScore(userIntStringMap(r.user), r.rating))
+      println("user score map is")
+      userScoreMap.take(50).foreach(println)
+      println("original user scores are")
+      userScores.take(50).foreach(println)
       combinedWithOthers ++ userScoreMap
     })
     
