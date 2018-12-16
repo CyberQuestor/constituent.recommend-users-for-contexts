@@ -13,13 +13,6 @@ class Serving
   def serve(query: Query,
     predictedResults: Seq[PredictedResult]): PredictedResult = {
     
-    println("all predictions")
-    //predictedResults.map(_.userScores).take(50).foreach(println)
-    
-     predictedResults.map(_.userScores).take(50).foreach(e => {
-      e.take(50).foreach(println)
-    })
-    
     // MODFIED
     val standard: Seq[Array[UserScore]] = if (query.num == 1) {
       // if query 1 item, don't standardize
