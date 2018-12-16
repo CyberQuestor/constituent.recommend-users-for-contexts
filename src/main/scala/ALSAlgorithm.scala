@@ -116,27 +116,22 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
   def predict(model: ALSModel, query: Query): PredictedResult = {
     model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV"))
     
-    
-    println("incoming query items")
-    query.items.take(50).foreach(println)
-    println("incoming query number")
-    println(query.num)
-    
     // convert items to Int index
     val queryList: Set[Int] = query.items.map(model.itemStringIntMap.get(_))
       .flatten.toSet
-      
-    println("queryList is")
-    queryList.take(50).foreach(println)
-    
-    println("predicted user features")
-    //model.userFeatures.take(50).foreach(println)
-    model.userFeatures.collect().foreach{case (userID,latentFactors) => println("userID:"+ userID + " factors:"+ latentFactors.mkString(",") )}
-
     
     var combinedWithOthers = ArrayBuffer[UserScore]()
+    queryList.foreach (e => {
+      val userIntStringMap = model.userStringIntMap.inverse
+      val userScores = model.recommendUsers(e, query.num)
+      println("found user score for item: "+ e)
+      userScores.take(50).foreach(println)
+      val userScoreMap = userScores.map(r => UserScore(userIntStringMap(r.user), r.rating))
+      combinedWithOthers ++ userScoreMap
+    })
     
-    query.items.foreach (e => {
+    
+    /*query.items.foreach (e => {
       // Convert String ID to Int index for Mllib
        model.itemStringIntMap.get(e).map { itemInt =>
          // create inverse view of userStringIntMap
@@ -151,7 +146,7 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
        }
        println("what is being combined")
        combinedWithOthers.take(50).foreach(println)
-    })
+    })*/
     
     PredictedResult(combinedWithOthers.toArray)
   }
