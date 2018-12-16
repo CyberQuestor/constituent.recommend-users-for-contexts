@@ -14,7 +14,7 @@ class Serving
     predictedResults: Seq[PredictedResult]): PredictedResult = {
     
     println("all predictions")
-    predictedResults.take(50).foreach(println)
+    predictedResults.map(_.userScores).take(50).foreach(println)
     
     // MODFIED
     val standard: Seq[Array[UserScore]] = if (query.num == 1) {
