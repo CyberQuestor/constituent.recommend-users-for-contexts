@@ -130,8 +130,8 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       val userScores = model.recommendUsers(e, query.num)
       println("found user score for item: "+ e)
       userScores.take(50).foreach(println)
-      //val userScoreMap = userScores.map(r => UserScore(userIntStringMap(r.user), r.rating))
-      //combinedWithOthers ++ userScoreMap
+      val userScoreMap = userScores.map(r => UserScore(userIntStringMap(r.user), r.rating))
+      combinedWithOthers ++ userScoreMap
     })
     
     
