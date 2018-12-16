@@ -131,13 +131,13 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       println("found user score for item: "+ e)
       userScores.take(50).foreach(println)
       val userScoreMap = userScores.map(r => UserScore(userIntStringMap(r.user), r.rating))
-      println("user score map is")
-      userScoreMap.take(50).foreach(println)
-      println("original user scores are")
-      userScores.take(50).foreach(println)
       combinedWithOthers ++ userScoreMap
+      
+      println("combinedWithOthers is ")
+      combinedWithOthers.take(50).foreach(println)
     })
     
+
     
     /*query.items.foreach (e => {
       // Convert String ID to Int index for Mllib
