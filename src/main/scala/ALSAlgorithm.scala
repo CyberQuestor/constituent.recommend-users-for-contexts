@@ -131,6 +131,8 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
        }.getOrElse{
         logger.info(s"No prediction for unknown item ${e}.")
        }
+       println("what is being combined")
+       combinedWithOthers.take(50).foreach(println)
     })
     
     PredictedResult(combinedWithOthers.toArray)
