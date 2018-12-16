@@ -75,7 +75,7 @@ def import_events(client):
   for user_id in user_ids:
     for viewed_item in random.sample(item_ids, 10):
       if random.choice((False, True)) :
-        print "User", user_id ,"likes item", viewed_item
+        print("User", user_id ,"likes item", viewed_item)
         client.create_event(
           event="like",
           entity_type="user",
@@ -84,7 +84,7 @@ def import_events(client):
           target_entity_id=viewed_item
         )
       else:
-        print "User", user_id ,"dislikes item", viewed_item
+        print("User", user_id ,"dislikes item", viewed_item)
         client.create_event(
           event="dislike",
           entity_type="user",
