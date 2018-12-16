@@ -100,11 +100,11 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
     println("top 50")
     //mllibRatings.take(50).foreach(println)
     
-    mllibRatings.take(50).foreach(e => {
+    /*mllibRatings.take(50).foreach(e => {
       val i = items.getOrElse(e.product, "Item missing")
       println("Composition: " + e)
       println("Composition item: " + i)
-    })
+    })*/
     
     val m = ALS.trainImplicit(
       ratings = mllibRatings,
@@ -116,6 +116,9 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
       seed = seed)
       
       println("Model through ALS likes training complete")
+      
+      println("trained user features")
+      m.userFeatures.take(50).foreach(println)
       
     new ALSModel(
       rank = m.rank,
