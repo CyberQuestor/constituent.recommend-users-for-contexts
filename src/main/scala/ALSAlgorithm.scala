@@ -126,6 +126,7 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     queryList.foreach (e => {
       println("item now is: " + e)
       val userIntStringMap = model.userStringIntMap.inverse
+      println("triggering user recommendations")
       val userScores = model.recommendUsers(e, query.num)
       println("found user score for item: "+ e)
       userScores.take(50).foreach(println)
