@@ -122,6 +122,13 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     println("incoming query number")
     println(query.num)
     
+    // convert items to Int index
+    val queryList: Set[Int] = query.items.map(model.itemStringIntMap.get(_))
+      .flatten.toSet
+      
+    println("queryList is")
+    queryList.take(50).foreach(println)
+    
     println("predicted user features")
     //model.userFeatures.take(50).foreach(println)
     model.userFeatures.collect().foreach{case (userID,latentFactors) => println("userID:"+ userID + " factors:"+ latentFactors.mkString(",") )}
