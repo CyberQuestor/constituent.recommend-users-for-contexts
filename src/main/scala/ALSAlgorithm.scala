@@ -116,8 +116,6 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
   def predict(model: ALSModel, query: Query): PredictedResult = {
     model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV"))
     
-    println("Entering prediction")
-    
     // convert items to Int index
     val queryList: Set[Int] = query.items.map(model.itemStringIntMap.get(_))
       .flatten.toSet
@@ -131,14 +129,12 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
         val userScores = model.recommendUsers(e, query.num)
            .map (r => UserScore(userIntStringMap(r.user), r.rating))
         combinedWithOthers = combinedWithOthers ++ userScores
-        println("found user score for item: "+ e)
-        userScores.take(50).foreach(println)
       } catch {
         case ex : NoSuchElementException => {
-            println("No user features found for this item")
+            //println("No user features found for this item")
          }
         case e: Exception => {
-            println("No user features found for this item")
+            //println("No user features found for this item")
         }
       }
     })
