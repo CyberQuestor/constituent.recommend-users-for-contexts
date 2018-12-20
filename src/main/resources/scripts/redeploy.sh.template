@@ -170,7 +170,7 @@ if [ -z "$DEPLOYEDPORT" ]
 then
   echo -n "No stale PIDs found for port $PORT"
 else
-  eval $($KILLSD_COMMAND)
+  $($KILLSD_COMMAND)
   echo -n "Stale PID found as $DEPLOYEDPORT. Resources released."
 fi
 
