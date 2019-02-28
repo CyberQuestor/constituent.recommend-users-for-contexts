@@ -1,3 +1,5 @@
+### Version
+This pipeline is now 0.0.2
 
 ### Setup project
 
