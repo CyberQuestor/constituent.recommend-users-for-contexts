@@ -125,7 +125,7 @@ class DataSource(val dsp: DataSourceParams)
     )(sc).map { case (entityId, properties) =>
       val item = try {
         // Assume categories is optional property of item.
-        Item(id= entityId, categories = properties.getOpt[List[String]]("categories"), properties.getOrElse[String]("domain",""), properties.getOrElse[String]("type",""))
+        Item(id= entityId, categories = properties.getOpt[List[String]]("categories"), properties.getOrElse[String]("domain",""), properties.getOrElse[String]("type",""), properties.getOrElse[String]("templateId",""))
       } catch {
         case e: Exception => {
           logger.error(s"Failed to get properties ${properties} of" +
@@ -223,7 +223,8 @@ case class Item(
     val id: String,
     val categories: Option[List[String]],
     val domain: String,
-    val itemType: String)
+    val itemType: String,
+    val templateId: String)
 
 class TrainingData(
   val users: RDD[(String, User)],

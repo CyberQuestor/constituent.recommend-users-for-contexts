@@ -51,7 +51,7 @@ class LikeALSAlgorithm(ap: ALSAlgorithmParams)
     
     // collect Item as Map and convert ID to Int index
     val items: Map[Int, Item] = data.items.map { case (id, item) =>(itemStringIntMap.getOrElse(id, 0), item)
-      case default => (0, Item("00000000-0000-0000-0000-000000000000", None,"haystack.in","POV"))
+      case default => (0, Item("00000000-0000-0000-0000-000000000000", None,"haystack.in","POV","00000000-0000-0000-0000-000000000000"))
     }.collectAsMap.toMap
     
     val mllibRatings = data.likeEvents

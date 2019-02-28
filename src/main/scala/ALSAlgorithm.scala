@@ -57,7 +57,7 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     
     // collect Item as Map and convert ID to Int index
     val items: Map[Int, Item] = data.items.map { case (id, item) =>(itemStringIntMap.getOrElse(id, 0), item)
-      case default => (0, Item("00000000-0000-0000-0000-000000000000", None,"haystack.in","POV"))
+      case default => (0, Item("00000000-0000-0000-0000-000000000000", None,"haystack.in","POV","00000000-0000-0000-0000-000000000000"))
     }.collectAsMap.toMap
     
     val mllibRatings = data.viewEvents
@@ -114,7 +114,17 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
   }
 
   def predict(model: ALSModel, query: Query): PredictedResult = {
-    model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV"))
+    val prediction = query.aim match {
+      case "item" => predictItems(model, query, query.num)
+      case "user" => predictUsers(model, query)
+      case "vehicle" => predictItems(model, query, Int.MaxValue)
+      case _ => PredictedResult(Array(), Array(), Array())
+    }
+    prediction
+  }
+  
+  def predictUsers(model: ALSModel, query: Query): PredictedResult = {
+    model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV", "00000000-0000-0000-0000-000000000000"))
     
     // convert items to Int index
     val queryList: Set[Int] = query.items.map(model.itemStringIntMap.get(_))
@@ -122,9 +132,9 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     
     var combinedWithOthers = ArrayBuffer[UserScore]()
     queryList.foreach (e => {
-      println("item now is: " + e)
+      // println("item now is: " + e)
       val userIntStringMap = model.userStringIntMap.inverse
-      println("triggering user recommendations")
+      // println("triggering user recommendations")
       try{
         val userScores = model.recommendUsers(e, query.num)
            .map (r => UserScore(userIntStringMap(r.user), r.rating))
@@ -139,26 +149,41 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       }
     })
     
-
+    PredictedResult(Array(), Array(), combinedWithOthers.toArray)
+  }
+  
+  def predictItems(model: ALSModel, query: Query, num: Int): PredictedResult = {
+    model.items.withDefaultValue(new Item("00000000-0000-0000-0000-000000000000", None, "haystack.in", "POV","00000000-0000-0000-0000-000000000000"))
     
-    /*query.items.foreach (e => {
-      // Convert String ID to Int index for Mllib
-       model.itemStringIntMap.get(e).map { itemInt =>
-         // create inverse view of userStringIntMap
-         val userIntStringMap = model.userStringIntMap.inverse
-         // recommendUsers() returns Array[MLlibRating], which uses item Int
-         // index. Convert it to String ID for returning PredictedResult
-         val userScores = model.recommendUsers(itemInt, query.num)
-         .map (r => UserScore(userIntStringMap(r.user), r.rating))
-         combinedWithOthers ++ userScores
-       }.getOrElse{
-        logger.info(s"No prediction for unknown item ${e}.")
-       }
-       println("what is being combined")
-       combinedWithOthers.take(50).foreach(println)
-    })*/
+    // convert items to Int index
+    val queryList: Set[Int] = query.users.map(model.userStringIntMap.get(_))
+      .flatten.toSet
+    // get all items
+    val allItemsMap = model.items
     
-    PredictedResult(combinedWithOthers.toArray)
+    var combinedWithOthers = ArrayBuffer[ItemScore]()
+    queryList.foreach (e => {
+      //println("user now is: " + e)
+      val itemIntStringMap = model.itemStringIntMap.inverse
+      //println("triggering item recommendations")
+      try{
+        val itemScores = model.recommendProducts(e, query.num)
+           .map (r => ItemScore(itemIntStringMap(r.product), r.rating, allItemsMap(r.product).domain, allItemsMap(r.product).itemType, allItemsMap(r.product).templateId))
+        combinedWithOthers = combinedWithOthers ++ itemScores
+      } catch {
+        case ex : NoSuchElementException => {
+            //println("No item features element found for this item")
+         }
+        case e: Exception => {
+            //println("No item features found for this item at all")
+        }
+      }
+    })
+    
+    //println("what is being combined")
+    //combinedWithOthers.take(8).foreach(println)
+    
+    PredictedResult(combinedWithOthers.toArray, Array(), Array())
   }
 
 }
