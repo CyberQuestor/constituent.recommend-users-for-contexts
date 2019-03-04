@@ -168,7 +168,7 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       //println("triggering item recommendations")
       try{
         val itemScores = model.recommendProducts(e, query.num)
-           .map (r => ItemScore(itemIntStringMap(r.product), r.rating, allItemsMap(r.product).domain, allItemsMap(r.product).itemType, allItemsMap(r.product).templateId))
+           .map (r => ItemScore(itemIntStringMap(r.product), r.rating, allItemsMap(r.product).domain, allItemsMap(r.product).itemType, allItemsMap(r.product).vehicleType))
         combinedWithOthers = combinedWithOthers ++ itemScores
       } catch {
         case ex : NoSuchElementException => {

@@ -32,7 +32,7 @@ case class ItemScore(
   score: Double,
   domain: String,
   itemType: String,
-  templateId: String
+  vehicleType: String
 )
 
 case class VehicleScore(

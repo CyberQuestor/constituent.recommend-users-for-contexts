@@ -73,8 +73,8 @@ class Serving
     
     val combinedWithOthers = serveCommonItems(query, predictedResults)
 					
-		var vehicularScoreMap = combinedWithOthers.groupBy(e => e.templateId).mapValues(_.foldLeft(0.0)(_ + _.score))
-		var vehicularMap = combinedWithOthers.groupBy(e => e.templateId).mapValues(_.size)
+		var vehicularScoreMap = combinedWithOthers.groupBy(e => e.vehicleType).mapValues(_.foldLeft(0.0)(_ + _.score))
+		var vehicularMap = combinedWithOthers.groupBy(e => e.vehicleType).mapValues(_.size)
 		val total = vehicularMap.values.sum.toDouble
 		val vehicularSegmentMap = vehicularMap.map { case (k,v) => VehicleScore(k, vehicularScoreMap(k), (v / total)) }
 					
@@ -106,7 +106,7 @@ class Serving
               (is.score - mvList(i).mean) / mvList(i).stdDev
             }
 
-            ItemScore(is.item, score, is.domain, is.itemType, is.templateId)
+            ItemScore(is.item, score, is.domain, is.itemType, is.vehicleType)
           }
         }
     }
@@ -133,8 +133,8 @@ class Serving
     combined.foreach(e => {
 					val domain = populate.get(e.item).get.domain
 					val itemType = populate.get(e.item).get.itemType
-					val templateId = populate.get(e.item).get.templateId
-					combinedWithOthers ::= new ItemScore(e.item, e.score, domain, itemType, templateId)
+					val vehicleType = populate.get(e.item).get.vehicleType
+					combinedWithOthers ::= new ItemScore(e.item, e.score, domain, itemType, vehicleType)
 					})
 		combinedWithOthers
   }
