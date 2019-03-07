@@ -5,6 +5,7 @@ package com.hs.haystack.tachyon.constituent.recommenduserstocontexts
 import org.apache.predictionio.controller.LServing
 import breeze.stats.meanAndVariance
 import breeze.stats.MeanAndVariance
+import scala.collection.immutable.ListMap
 
 class Serving
   extends LServing[Query, PredictedResult] {
@@ -76,9 +77,9 @@ class Serving
 		var vehicularScoreMap = combinedWithOthers.groupBy(e => e.vehicleType).mapValues(_.foldLeft(0.0)(_ + _.score))
 		var vehicularMap = combinedWithOthers.groupBy(e => e.vehicleType).mapValues(_.size)
 		val total = vehicularMap.values.sum.toDouble
-		val vehicularSegmentMap = vehicularMap.map { case (k,v) => VehicleScore(k, vehicularScoreMap(k), (v / total)) }
-					
-    PredictedResult(Array(), vehicularSegmentMap.toArray, Array())
+		val vehicularSegmentMap = new ListMap() ++ vehicularMap.map({ case (k, v) => k -> VehicleScore(k, vehicularScoreMap(k), (v / total)) }).toSeq.sortWith(_._2.frequency > _._2.frequency)
+		
+    PredictedResult(Array(), vehicularSegmentMap.values.toArray, Array())
   }
   
   def serveCommonItems(query: Query,
