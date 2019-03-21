@@ -1,5 +1,6 @@
 ### Version
-This pipeline is now 0.0.2
+This pipeline is now *0.0.2*
+_Target API version: *1.1.3.3*_
 
 ### Setup project
 
