@@ -1,0 +1,125 @@
+#!/bin/bash
+#set -e
+#NAME=recommend-users-for-contexts
+
+my_dir="$(dirname "$0")"
+cd $my_dir
+
+###############################################################################
+# Configuration - read this section, modify only at conf/pipeline.conf
+###############################################################################
+
+# Read configuration file if it is present
+[ -r ../conf/pipeline.conf ] && . ../conf/pipeline.conf
+
+# Read configuration file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# set up the logging file
+DEPLOY_TIMESTAMP=`date +"%Y%m%d-%H%M%S"`
+DEPLOY_LOG_FILE="${LOG_DIR}/${NAME}/logs/deploy_${NAME}_${DEPLOY_TIMESTAMP}.log"
+DEPLOY_LOGS="$LOG_DIR/$NAME/logs/deploy"*
+DEPLOY_ARCHIVE="$LOG_DIR/$NAME/archive"
+mkdir -p "$LOG_DIR/$NAME/logs"
+mkdir -p "$LOG_DIR/$NAME/archive"
+[ "$(ls -A $DEPLOY_LOGS)" ] && mv $DEPLOY_LOGS "$LOG_DIR/$NAME/archive"
+touch "$DEPLOY_LOG_FILE"
+
+# enginex_algo_dev.json, enginey_null_prod.json
+DEPLOY_ENGINE_JSON=engine.json
+
+###############################################################################
+# End of configuration
+###############################################################################
+
+###############
+# Sanity check
+###############
+
+check_non_empty() {
+  # $1 is the content of the variable in quotes e.g. "$FROM_EMAIL"
+  # $2 is the error message
+  if [[ $1 == "" ]]; then
+    echo "ERROR: specify $2"
+    exit -1
+  fi
+}
+
+check_non_empty "$PIO_HOME"     "PIO_HOME at pipeline.conf"
+check_non_empty "$LOG_DIR"      "LOG_DIR at pipeline.conf"
+check_non_empty "$HOST"    "HOSTNAME at pipeline.conf"
+check_non_empty "$HOSTNAME"    "HOSTNAME at pipeline.conf"
+check_non_empty "$PORT"        "PORT at pipeline.conf"
+check_non_empty "$ACCESS_KEY"   "ACCESSKEY at pipeline.conf"
+check_non_empty "$DEPLOY_ENGINE_JSON" "DEPLOY_ENGINE_JSON at deploy script file"
+
+#check_non_empty "$FROM_EMAIL"   "FROM_EMAIL at pipeline.conf"
+#check_non_empty "$TARGET_EMAIL" "TARGET_EMAIL at pipeline.conf"
+#check_non_empty "$EMAIL_SUBJECT" "TARGET_EMAIL at pipeline.conf"
+
+
+###############
+# End of sanity check
+###############
+
+
+##################
+# Start of script
+##################
+
+DEPLOY_COMMAND="${PIO_HOME}/bin/pio deploy -v $DEPLOY_ENGINE_JSON
+    --ip $HOST
+    --port $PORT
+    --event-server-port $ES_PORT
+    --feedback --accesskey $ACCESS_KEY
+    --
+    --executor-memory $DEPLOY_EXECUTOR_MEMORY
+    --driver-memory $DEPLOY_DRIVER_MEMORY
+    --total-executor-cores $DEPLOY_CORES"
+
+[ -n "$DEPLOY_MASTER" ] && DEPLOY_COMMAND="$DEPLOY_COMMAND --master $DEPLOY_MASTER"
+
+# Print the command then quit if we see any arguments (use for debug only)
+#if [[ "$1" != "" ]]; then
+  #echo "[DEBUG] Commands to be run (not actually running it):"
+  #echo "$(echo $DEPLOY_COMMAND | sed "s/\\n//g")"
+  #exit -1
+#fi
+
+##################
+# End of script
+##################
+
+######################
+# Actually running it
+######################
+
+cd ../pipeline			# change to the deployment folder
+
+PIDBYPORT_COMMAND="/usr/bin/lsof -t -i:$PORT"
+PID=$($PIDBYPORT_COMMAND)
+
+$($DEPLOY_COMMAND 1>$DEPLOY_LOG_FILE 2>&1) &
+
+# kill the previous deployment to free up resources
+printf "\nAwaiting signal from provisioned pipeline.\n"
+sleep 60			# wait for 60 seconds before doing anything else
+
+cd .. # change back to the location of the script
+
+STATUS_COMMAND="wget -O /dev/null --tries=10 --retry-connrefused --waitretry=60 --quiet http://$HOST:$PORT"
+
+$($STATUS_COMMAND) &			# run the check to see if the deployment is online
+DEPLOY_RESULT=$?
+
+# and then, after new deployment (confirmed) kill the previous one to release resources
+[ $DEPLOY_RESULT -eq 0 ] && kill $PID > /dev/null 2>&1		# kill the previously running process if any
+
+printf "\nPipeline provisioned. Watch logs for more details.\n"
+
+######################
+# End of actual running
+######################
+
+# do not exit here if it is being sourced at redeploy and you want to access all variables
+exit $DEPLOY_RESULT

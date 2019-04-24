@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+#NAME=recommend-users-for-contexts
+
+my_dir="$(dirname "$0")"
+cd $my_dir
+
+# Read configuration file if it is present
+[ -r ../conf/pipeline.conf ] && . ../conf/pipeline.conf
+
+# Read configuration file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+cd ../pipeline
+
+${PIO_HOME}/bin/pio build --verbose
+
+cd .

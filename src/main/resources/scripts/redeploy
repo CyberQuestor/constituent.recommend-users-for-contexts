@@ -1,0 +1,72 @@
+#!/bin/bash
+set -e
+#NAME=recommend-users-for-contexts
+
+my_dir="$(dirname "$0")"
+cd $my_dir
+
+# Read configuration file if it is present
+[ -r ../conf/pipeline.conf ] && . ../conf/pipeline.conf
+
+# Read configuration file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+REDEPLOY_TIMESTAMP=`date +"%Y%m%d-%H%M%S"`
+
+TRAIN_SOURCE=source ./train
+TRAIN_RESULT=$? 	#train the models
+
+######################
+# Start of training notification - enable if required
+######################
+echo -n "Training ended with return value $TRAIN_RESULT at "
+date
+
+if [[ $TRAIN_RESULT -ne 0 ]]; then
+  #echo "Training failed due to few errors at $REDEPLOY_TIMESTAMP. Visit logs for more details." | mail -s "Error in train: $EMAIL_SUBJECT $REDEPLOY_TIMESTAMP" -a "From: $FROM_EMAIL" $TARGET_EMAIL
+  echo -n "Train script aborted at "
+  date
+  exit 1
+fi
+
+######################
+# End of training notification
+######################
+
+DEPLOY_SOURCE=source ./deploy
+DEPLOY_RESULT=$?	#deploy the trained models (if there were no errors)
+
+######################
+# Start of deploy notification - enable if required
+######################
+echo -n "Deploy ended with return value $DEPLOY_RESULT at "
+date
+
+if [[ $DEPLOY_RESULT -ne 0 ]]; then
+  #echo "Deployment failed due to few errors at $REDEPLOY_TIMESTAMP. Visit logs for more details." | mail -s "Error in deploy: $EMAIL_SUBJECT $REDEPLOY_TIMESTAMP" -a "From: $FROM_EMAIL" $TARGET_EMAIL
+  echo -n "Deploy script aborted at "
+  date
+  exit 1
+fi
+
+######################
+# End of deploy notification
+######################
+
+
+
+######################
+# Start of success notification - enable if required
+######################
+
+if [ $TRAIN_RESULT -eq 0 ] && [ $DEPLOY_RESULT -eq 0 ]; then
+  #echo "Successfully redeployed pipeline at $REDEPLOY_TIMESTAMP. Visit logs for more details." | mail -s "Normal: $EMAIL_SUBJECT $REDEPLOY_TIMESTAMP" -a "From: $FROM_EMAIL" $TARGET_EMAIL
+  echo -n "Successfully redeployed pipeline at "
+  date
+  exit 1
+fi
+
+
+######################
+# End of success notification
+######################
