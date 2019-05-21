@@ -67,6 +67,11 @@ check_non_empty "$DEPLOY_ENGINE_JSON" "DEPLOY_ENGINE_JSON at deploy script file"
 # Start of script
 ##################
 
+# Alter JAVA_OPTS for monitoring
+JAVA_OPTS_EXISTING=$JAVA_OPTS
+JAVA_OPTS_PIPE="-Xmx1g -Dpio.pipeline.$PORT.mon=true"
+export JAVA_OPTS=$JAVA_OPTS_PIPE
+
 DEPLOY_COMMAND="${PIO_HOME}/bin/pio deploy -v $DEPLOY_ENGINE_JSON
     --ip $HOST
     --port $PORT
@@ -100,6 +105,9 @@ PIDBYPORT_COMMAND="/usr/bin/lsof -t -i:$PORT"
 PID=$($PIDBYPORT_COMMAND)
 
 $($DEPLOY_COMMAND 1>$DEPLOY_LOG_FILE 2>&1) &
+
+# Return JAVA_OPTS to normal state
+export JAVA_OPTS=$JAVA_OPTS_EXISTING
 
 # kill the previous deployment to free up resources
 printf "\nAwaiting signal from provisioned pipeline.\n"
